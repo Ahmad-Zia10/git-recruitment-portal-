@@ -8,6 +8,7 @@ import { authRoutes } from './modules/auth/auth.routes'
 import { companyRoutes } from './modules/companies/companies.routes'
 import { roleRoutes } from './modules/roles/role.routes'
 import { jobOpeningRoutes } from './modules/job-openings/job-opening.routes'
+import { candidateRoutes } from './modules/candidates/candidate.route'
 
 export function buildApp() {
   const app = Fastify({
@@ -67,6 +68,8 @@ export function buildApp() {
   app.register(roleRoutes, { prefix: '/api/v1/roles' })
 
   app.register(jobOpeningRoutes, { prefix: '/api/v1/job-openings' })
+
+  app.register(candidateRoutes, { prefix: '/api/v1/candidates' })
 
   return app
 }
