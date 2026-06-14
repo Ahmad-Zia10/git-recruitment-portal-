@@ -4,6 +4,7 @@ import jwt from '@fastify/jwt'
 import { env } from './config/env'
 import { AppError } from './shared/errors'
 import { ZodError } from 'zod'
+import { authRoutes } from './modules/auth/auth.routes'
 
 export function buildApp() {
   const app = Fastify({
@@ -56,6 +57,8 @@ export function buildApp() {
   app.get('/health', async () => {
     return { status: 'ok', timestamp: new Date().toISOString() }
   })
+
+  app.register(authRoutes, { prefix: '/api/v1/auth' })
 
   return app
 }
