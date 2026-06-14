@@ -5,6 +5,8 @@ import { env } from './config/env'
 import { AppError } from './shared/errors'
 import { ZodError } from 'zod'
 import { authRoutes } from './modules/auth/auth.routes'
+import { companyRoutes } from './modules/companies/companies.routes'
+import { roleRoutes } from './modules/roles/role.routes'
 
 export function buildApp() {
   const app = Fastify({
@@ -59,6 +61,9 @@ export function buildApp() {
   })
 
   app.register(authRoutes, { prefix: '/api/v1/auth' })
+  
+  app.register(companyRoutes, { prefix: '/api/v1/companies' })
+  app.register(roleRoutes, { prefix: '/api/v1/roles' })
 
   return app
 }
