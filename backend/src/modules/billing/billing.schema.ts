@@ -5,7 +5,6 @@ export const CreateBillingRecordSchema = z.object({
   demand_per_month: z.number().positive(),
   bill_to_customer_gbp_monthly: z.number().positive(),
   margin_per_month_inr: z.number().optional(),
-  margin_pct: z.number().positive(),
   invoice_ref: z.string().optional(),
   billing_period_start: z.string().datetime().optional(),
   billing_period_end: z.string().datetime().optional(),
