@@ -44,6 +44,8 @@ export const ApplicationQuerySchema = z.object({
   company_id: z.string().uuid().optional(),
   candidate_id: z.string().uuid().optional(),
   job_opening_id: z.string().uuid().optional(),
+  sortBy: z.enum(['applied_at', 'updated_at', 'match_score', 'status']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
   page: z.coerce.number().default(1),
   limit: z.coerce.number().default(20),
 })

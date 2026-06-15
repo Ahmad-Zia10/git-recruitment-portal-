@@ -10,6 +10,7 @@ import {
 } from './application.schema'
 import { validateStatusTransition, ApplicationStatus } from '../../shared/utils/status-machine'
 import { computeMatchScore } from '../../shared/utils/match-score'
+import { getSorting } from '../../shared/utils/sorting'
 
 const applicationInclude = {
   job_opening: {
@@ -44,6 +45,12 @@ const applicationInclude = {
 
 export async function listApplications(query: ApplicationQuery) {
   const { skip, take, page, limit } = getPagination(query)
+  const orderBy = getSorting(
+    query.sortBy,
+    query.sortOrder,
+    ['applied_at', 'updated_at', 'match_score', 'status'],
+    'applied_at'
+  )
 
   const where = {
     ...(query.status && { status: query.status }),
@@ -59,7 +66,7 @@ export async function listApplications(query: ApplicationQuery) {
       where,
       skip,
       take,
-      orderBy: { applied_at: 'desc' },
+      orderBy,
       include: applicationInclude,
     }),
     prisma.applications.count({ where }),
