@@ -8,6 +8,8 @@ import {
   CreateInterviewRoundInput,
   UpdateInterviewRoundInput,
 } from './application.schema'
+import { validateStatusTransition, ApplicationStatus } from '../../shared/utils/status-machine'
+import { computeMatchScore } from '../../shared/utils/match-score'
 
 const applicationInclude = {
   job_opening: {
@@ -90,6 +92,7 @@ export async function createApplication(
 
   const candidate = await prisma.candidates.findUnique({
     where: { id: data.candidate_id },
+    include: { skills: true },
   })
   if (!candidate) throw new NotFoundError('Candidate not found')
 
@@ -103,9 +106,12 @@ export async function createApplication(
   })
   if (existing) throw new ConflictError('This candidate is already applied to this opening')
 
+  const match_score = computeMatchScore(candidate, opening)
+
   return prisma.applications.create({
     data: {
       ...data,
+      match_score,
       expected_availability: data.expected_availability
         ? new Date(data.expected_availability)
         : undefined,
@@ -119,7 +125,12 @@ export async function updateApplicationStatus(
   id: string,
   data: UpdateApplicationStatusInput
 ) {
-  await getApplicationById(id)
+  const application = await getApplicationById(id)
+
+  validateStatusTransition(
+    application.status as ApplicationStatus,
+    data.status as ApplicationStatus
+  )
 
   return prisma.applications.update({
     where: { id },
@@ -163,5 +174,25 @@ export async function updateInterviewRound(
       ...data,
       scheduled_at: data.scheduled_at ? new Date(data.scheduled_at) : undefined,
     },
+  })
+}
+
+export async function recalculateMatchScore(id: string) {
+  const application = await prisma.applications.findUnique({
+    where: { id },
+    include: {
+      candidate: { include: { skills: true } },
+      job_opening: true,
+    },
+  })
+
+  if (!application) throw new NotFoundError('Application not found')
+
+  const match_score = computeMatchScore(application.candidate, application.job_opening)
+
+  return prisma.applications.update({
+    where: { id },
+    data: { match_score },
+    include: applicationInclude,
   })
 }

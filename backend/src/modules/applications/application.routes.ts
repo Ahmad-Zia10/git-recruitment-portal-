@@ -14,6 +14,7 @@ import {
   updateApplicationStatus,
   addInterviewRound,
   updateInterviewRound,
+  recalculateMatchScore,
 } from './application.service'
 
 export async function applicationRoutes(app: FastifyInstance) {
@@ -43,6 +44,12 @@ export async function applicationRoutes(app: FastifyInstance) {
     const { id } = request.params as { id: string }
     const body = UpdateApplicationStatusSchema.parse(request.body)
     const data = await updateApplicationStatus(id, body)
+    return { success: true, data }
+  })
+
+  app.post('/:id/recalculate-score', async (request) => {
+    const { id } = request.params as { id: string }
+    const data = await recalculateMatchScore(id)
     return { success: true, data }
   })
 
