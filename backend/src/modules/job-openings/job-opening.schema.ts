@@ -30,6 +30,8 @@ export const JobOpeningQuerySchema = z.object({
   hiring_type: z.enum(['contract', 'permanent', 'fixed_term']).optional(),
   work_mode: z.enum(['onsite', 'remote', 'hybrid']).optional(),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
+  sortBy: z.enum(['created_at', 'priority', 'expected_start_date', 'status']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
   company_id: z.string().uuid().optional(),
   role_id: z.string().uuid().optional(),
   search: z.string().optional(),

@@ -74,11 +74,16 @@ export async function createBillingRecord(data: CreateBillingRecordInput) {
   if (existing) throw new ConflictError('A billing record already exists for this application')
 
   const bill_to_customer_gbp_yearly = data.bill_to_customer_gbp_monthly * 12
+  const margin_pct =
+    ((data.bill_to_customer_gbp_monthly - data.demand_per_month) /
+      data.bill_to_customer_gbp_monthly) *
+    100
 
   return prisma.billing_records.create({
     data: {
       ...data,
       bill_to_customer_gbp_yearly,
+      margin_pct,
       billing_period_start: data.billing_period_start
         ? new Date(data.billing_period_start)
         : undefined,
@@ -94,17 +99,25 @@ export async function updateBillingRecord(
   id: string,
   data: UpdateBillingRecordInput
 ) {
-  await getBillingById(id)
+  const existing = await getBillingById(id)
 
-  const bill_to_customer_gbp_yearly = data.bill_to_customer_gbp_monthly
-    ? data.bill_to_customer_gbp_monthly * 12
-    : undefined
+  const bill_to_customer_gbp_monthly =
+    data.bill_to_customer_gbp_monthly ?? Number(existing.bill_to_customer_gbp_monthly)
+  const demand_per_month =
+    data.demand_per_month ?? Number(existing.demand_per_month)
+
+  const bill_to_customer_gbp_yearly = bill_to_customer_gbp_monthly * 12
+  const margin_pct =
+    ((bill_to_customer_gbp_monthly - demand_per_month) /
+      bill_to_customer_gbp_monthly) *
+    100
 
   return prisma.billing_records.update({
     where: { id },
     data: {
       ...data,
       bill_to_customer_gbp_yearly,
+      margin_pct,
       billing_period_start: data.billing_period_start
         ? new Date(data.billing_period_start)
         : undefined,

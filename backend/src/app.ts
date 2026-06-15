@@ -11,6 +11,7 @@ import { jobOpeningRoutes } from './modules/job-openings/job-opening.routes'
 import { candidateRoutes } from './modules/candidates/candidate.route'
 import { applicationRoutes } from './modules/applications/application.routes'
 import { billingRoutes } from './modules/billing/billing.routes'
+import { dashboardRoutes } from './modules/dashboard/dashboard.routes'
 
 export function buildApp() {
   const app = Fastify({
@@ -67,7 +68,7 @@ export function buildApp() {
   app.register(authRoutes, { prefix: '/api/v1/auth' })
 
   app.register(companyRoutes, { prefix: '/api/v1/companies' })
-  
+
   app.register(roleRoutes, { prefix: '/api/v1/roles' })
 
   app.register(jobOpeningRoutes, { prefix: '/api/v1/job-openings' })
@@ -77,6 +78,8 @@ export function buildApp() {
   app.register(applicationRoutes, { prefix: '/api/v1/applications' })
 
   app.register(billingRoutes, { prefix: '/api/v1/billing' })
+
+  app.register(dashboardRoutes, { prefix: '/api/v1/dashboard' })
 
   return app
 }

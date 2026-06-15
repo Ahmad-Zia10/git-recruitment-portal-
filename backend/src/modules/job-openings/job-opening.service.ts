@@ -6,6 +6,7 @@ import {
   UpdateJobOpeningInput,
   JobOpeningQuery,
 } from './job-opening.schema'
+import { getSorting } from '../../shared/utils/sorting'
 
 const jobOpeningInclude = {
   company: {
@@ -21,6 +22,12 @@ const jobOpeningInclude = {
 
 export async function listJobOpenings(query: JobOpeningQuery) {
   const { skip, take, page, limit } = getPagination(query)
+  const orderBy = getSorting(
+    query.sortBy,
+    query.sortOrder,
+    ['created_at', 'priority', 'expected_start_date', 'status'],
+    'created_at'
+  )
 
   const where = {
     ...(query.status && { status: query.status }),
@@ -42,7 +49,7 @@ export async function listJobOpenings(query: JobOpeningQuery) {
       where,
       skip,
       take,
-      orderBy: { created_at: 'desc' },
+      orderBy,
       include: jobOpeningInclude,
     }),
     prisma.job_openings.count({ where }),

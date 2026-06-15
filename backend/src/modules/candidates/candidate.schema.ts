@@ -47,6 +47,8 @@ export const CandidateQuerySchema = z.object({
     .optional(),
   min_exp: z.coerce.number().optional(),
   max_exp: z.coerce.number().optional(),
+  sortBy: z.enum(['created_at', 'exp_years', 'availability_date']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
   search: z.string().optional(),
   page: z.coerce.number().default(1),
   limit: z.coerce.number().default(20),

@@ -11,6 +11,7 @@ import {
   CreateCertificationInput,
   CreateLanguageInput,
 } from './candidate.schema'
+import { getSorting } from '../../shared/utils/sorting'
 
 const candidateChildInclude = {
   skills: true,
@@ -22,6 +23,12 @@ const candidateChildInclude = {
 
 export async function listCandidates(query: CandidateQuery) {
   const { skip, take, page, limit } = getPagination(query)
+  const orderBy = getSorting(
+    query.sortBy,
+    query.sortOrder,
+    ['created_at', 'exp_years', 'availability_date'],
+    'created_at'
+  )
 
   const where = {
     ...(query.status && { status: query.status }),
@@ -48,7 +55,7 @@ export async function listCandidates(query: CandidateQuery) {
       where,
       skip,
       take,
-      orderBy: { created_at: 'desc' },
+      orderBy,
       select: {
         id: true,
         full_name: true,
