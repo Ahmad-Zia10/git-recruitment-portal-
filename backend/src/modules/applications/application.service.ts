@@ -11,6 +11,7 @@ import {
 import { validateStatusTransition, ApplicationStatus } from '../../shared/utils/status-machine'
 import { computeMatchScore } from '../../shared/utils/match-score'
 import { getSorting } from '../../shared/utils/sorting'
+import { logger } from '../../config/logger'
 
 const applicationInclude = {
   job_opening: {
@@ -115,6 +116,11 @@ export async function createApplication(
 
   const match_score = computeMatchScore(candidate, opening)
 
+  logger.info(
+    { candidateId: data.candidate_id, jobOpeningId: data.job_opening_id, matchScore: match_score },
+    'Application created with match score'
+  )
+
   return prisma.applications.create({
     data: {
       ...data,
@@ -133,6 +139,11 @@ export async function updateApplicationStatus(
   data: UpdateApplicationStatusInput
 ) {
   const application = await getApplicationById(id)
+
+  logger.info(
+    { applicationId: id, from: application.status, to: data.status },
+    'Application status transition requested'
+  )
 
   validateStatusTransition(
     application.status as ApplicationStatus,

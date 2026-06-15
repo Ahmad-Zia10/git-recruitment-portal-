@@ -15,12 +15,15 @@ import { dashboardRoutes } from './modules/dashboard/dashboard.routes'
 
 export function buildApp() {
   const app = Fastify({
-    logger: {
-      transport:
-        env.NODE_ENV === 'development'
-          ? { target: 'pino-pretty' }
-          : undefined,
-    },
+    logger:
+      env.NODE_ENV === 'production'
+        ? true
+        : {
+            transport: {
+              target: 'pino-pretty',
+              options: { colorize: true },
+            },
+          },
   })
 
   // ─── Plugins ───────────────────────────────────────────
