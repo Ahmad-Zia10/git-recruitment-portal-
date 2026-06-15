@@ -14,6 +14,8 @@ import { billingRoutes } from './modules/billing/billing.routes'
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes'
 import helmet from '@fastify/helmet'
 import rateLimit from '@fastify/rate-limit'
+import swagger from '@fastify/swagger'
+import swaggerUi from '@fastify/swagger-ui'
 
 export async function buildApp() {
   const app = Fastify({
@@ -60,6 +62,42 @@ export async function buildApp() {
         scriptSrc: ["'self'"],
       },
     },
+  })
+
+  // ─── Swagger docs ──────────────────────────────────────
+  await app.register(swagger, {
+    openapi: {
+      info: {
+        title: 'GIT Recruitment Portal API',
+        description: 'API documentation for the GIT Recruitment Portal backend',
+        version: '1.0.0',
+      },
+      servers: [
+        {
+          url: 'http://localhost:3000',
+          description: 'Development server',
+        },
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
+      security: [{ bearerAuth: [] }],
+    },
+  })
+
+  await app.register(swaggerUi, {
+    routePrefix: '/docs',
+    uiConfig: {
+      docExpansion: 'list',
+      deepLinking: true,
+    },
+    staticCSP: true,
   })
 
   // ─── Global error handler ──────────────────────────────
