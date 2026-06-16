@@ -1,6 +1,11 @@
 import { FastifyInstance } from 'fastify'
 import { verifyToken } from '../../shared/middleware/auth.middleware'
 import {
+  requireAdmin,
+  requireAccountManager,
+  requireAnyRole,
+} from '../../shared/middleware/rbac.middleware'
+import {
   CompanyQuerySchema,
   CreateCompanySchema,
   UpdateCompanySchema,
@@ -16,32 +21,35 @@ import {
 export async function companyRoutes(app: FastifyInstance) {
   app.addHook('preHandler', verifyToken)
 
-  app.get('/', async (request) => {
+  // All authenticated users can read
+  app.get('/', { preHandler: requireAnyRole }, async (request) => {
     const query = CompanyQuerySchema.parse(request.query)
     const result = await listCompanies(query)
     return { success: true, ...result }
   })
 
-  app.get('/:id', async (request) => {
+  app.get('/:id', { preHandler: requireAnyRole }, async (request) => {
     const { id } = request.params as { id: string }
     const data = await getCompanyById(id)
     return { success: true, data }
   })
 
-  app.post('/', async (request, reply) => {
+  // Only admin and account_manager can create and update
+  app.post('/', { preHandler: requireAccountManager }, async (request, reply) => {
     const body = CreateCompanySchema.parse(request.body)
     const data = await createCompany(body)
     return reply.status(201).send({ success: true, data })
   })
 
-  app.put('/:id', async (request) => {
+  app.put('/:id', { preHandler: requireAccountManager }, async (request) => {
     const { id } = request.params as { id: string }
     const body = UpdateCompanySchema.parse(request.body)
     const data = await updateCompany(id, body)
     return { success: true, data }
   })
 
-  app.delete('/:id', async (request) => {
+  // Only admin can delete
+  app.delete('/:id', { preHandler: requireAdmin }, async (request) => {
     const { id } = request.params as { id: string }
     await deleteCompany(id)
     return { success: true, message: 'Company deleted' }

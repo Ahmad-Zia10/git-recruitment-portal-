@@ -12,15 +12,22 @@ import { candidateRoutes } from './modules/candidates/candidate.route'
 import { applicationRoutes } from './modules/applications/application.routes'
 import { billingRoutes } from './modules/billing/billing.routes'
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes'
+import helmet from '@fastify/helmet'
+import rateLimit from '@fastify/rate-limit'
+import swagger from '@fastify/swagger'
+import swaggerUi from '@fastify/swagger-ui'
 
-export function buildApp() {
+export async function buildApp() {
   const app = Fastify({
-    logger: {
-      transport:
-        env.NODE_ENV === 'development'
-          ? { target: 'pino-pretty' }
-          : undefined,
-    },
+    logger:
+      env.NODE_ENV === 'production'
+        ? true
+        : {
+            transport: {
+              target: 'pino-pretty',
+              options: { colorize: true },
+            },
+          },
   })
 
   // ─── Plugins ───────────────────────────────────────────
@@ -33,32 +40,100 @@ export function buildApp() {
     secret: env.JWT_SECRET,
   })
 
-  // ─── Global error handler ──────────────────────────────
-  app.setErrorHandler((error, request, reply) => {
-    if (error instanceof AppError) {
-      return reply.status(error.statusCode).send({
-        success: false,
-        code: error.code,
-        message: error.message,
-      })
-    }
-
-    if (error instanceof ZodError) {
-      return reply.status(400).send({
-        success: false,
-        code: 'VALIDATION_ERROR',
-        message: 'Validation failed',
-        errors: error.flatten().fieldErrors,
-      })
-    }
-
-    app.log.error(error)
-    return reply.status(500).send({
+  // ─── Rate limiting ─────────────────────────────────────
+  await app.register(rateLimit, {
+    global: true,
+    max: 100,
+    timeWindow: '1 minute',
+    errorResponseBuilder: () => ({
       success: false,
-      code: 'INTERNAL_SERVER_ERROR',
-      message: 'Something went wrong',
-    })
+      code: 'RATE_LIMIT_EXCEEDED',
+      message: 'Too many requests, please slow down',
+    }),
   })
+
+  // ─── Security headers ──────────────────────────────────
+  await app.register(helmet, {
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        scriptSrc: ["'self'"],
+      },
+    },
+  })
+
+  // ─── Swagger docs ──────────────────────────────────────
+  await app.register(swagger, {
+    openapi: {
+      info: {
+        title: 'GIT Recruitment Portal API',
+        description: 'API documentation for the GIT Recruitment Portal backend',
+        version: '1.0.0',
+      },
+      servers: [
+        {
+          url: 'http://localhost:3000',
+          description: 'Development server',
+        },
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
+      security: [{ bearerAuth: [] }],
+    },
+  })
+
+  await app.register(swaggerUi, {
+    routePrefix: '/docs',
+    uiConfig: {
+      docExpansion: 'list',
+      deepLinking: true,
+    },
+    staticCSP: true,
+  })
+
+  // ─── Global error handler ──────────────────────────────
+  app.setErrorHandler((error:any, request, reply) => {
+  if (error.statusCode === 429) {
+    return reply.status(429).send({
+      success: false,
+      code: 'RATE_LIMIT_EXCEEDED',
+      message: 'Too many requests, please slow down',
+    })
+  }
+
+  if (error instanceof AppError) {
+    return reply.status(error.statusCode).send({
+      success: false,
+      code: error.code,
+      message: error.message,
+    })
+  }
+
+  if (error instanceof ZodError) {
+    return reply.status(400).send({
+      success: false,
+      code: 'VALIDATION_ERROR',
+      message: 'Validation failed',
+      errors: error.flatten().fieldErrors,
+    })
+  }
+
+  app.log.error(error)
+  return reply.status(500).send({
+    success: false,
+    code: 'INTERNAL_SERVER_ERROR',
+    message: 'Something went wrong',
+  })
+})
 
   // ─── Health check ──────────────────────────────────────
   app.get('/health', async () => {

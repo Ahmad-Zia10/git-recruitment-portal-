@@ -6,6 +6,7 @@ import {
   UpdateBillingRecordInput,
   BillingQuery,
 } from './billing.schema'
+import { logger } from '../../config/logger'
 
 const billingInclude = {
   application: {
@@ -79,7 +80,7 @@ export async function createBillingRecord(data: CreateBillingRecordInput) {
       data.bill_to_customer_gbp_monthly) *
     100
 
-  return prisma.billing_records.create({
+  const record = await prisma.billing_records.create({
     data: {
       ...data,
       bill_to_customer_gbp_yearly,
@@ -93,6 +94,13 @@ export async function createBillingRecord(data: CreateBillingRecordInput) {
     },
     include: billingInclude,
   })
+
+  logger.info(
+    { applicationId: data.application_id, marginPct: margin_pct, yearlyAmount: bill_to_customer_gbp_yearly },
+    'Billing record created with auto-calculated fields'
+  )
+
+  return record
 }
 
 export async function updateBillingRecord(
