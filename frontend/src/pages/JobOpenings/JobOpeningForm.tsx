@@ -38,7 +38,7 @@ export const JobOpeningForm: React.FC<JobOpeningFormProps> = ({ onClose }) => {
     queryKey: ['companies', 'active-list'],
     queryFn: async () => {
       const response = await apiClient.get('/companies', { params: { limit: 100 } });
-      return response.data.data.data || [];
+      return response.data.data || [];
     },
   });
 
@@ -47,7 +47,7 @@ export const JobOpeningForm: React.FC<JobOpeningFormProps> = ({ onClose }) => {
     queryKey: ['roles', 'list'],
     queryFn: async () => {
       const response = await apiClient.get('/roles', { params: { limit: 100 } });
-      return response.data.data.data || [];
+      return response.data.data || [];
     },
   });
 

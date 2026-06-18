@@ -21,7 +21,7 @@ export const JobOpenings: React.FC = () => {
       params.append('page', page.toString());
       
       const response = await apiClient.get('/job-openings', { params });
-      return response.data.data;
+      return response.data;
     },
   });
 

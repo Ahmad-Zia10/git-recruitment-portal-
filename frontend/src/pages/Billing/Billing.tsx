@@ -15,7 +15,7 @@ export const Billing: React.FC = () => {
       params.append('page', page.toString());
       
       const response = await apiClient.get('/billing', { params });
-      return response.data.data;
+      return response.data;
     },
   });
 

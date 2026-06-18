@@ -31,7 +31,7 @@ export const Pipeline: React.FC = () => {
       params.append('page', page.toString());
       
       const response = await apiClient.get('/applications', { params });
-      return response.data.data;
+      return response.data;
     },
   });
 

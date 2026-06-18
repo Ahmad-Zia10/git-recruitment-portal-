@@ -17,7 +17,7 @@ export const Clients: React.FC = () => {
       params.append('page', page.toString());
       
       const response = await apiClient.get('/companies', { params });
-      return response.data.data;
+      return response.data;
     },
   });
 

@@ -28,7 +28,7 @@ export const BillingForm: React.FC<BillingFormProps> = ({ onClose }) => {
     queryKey: ['applications', 'placed-list'],
     queryFn: async () => {
       const response = await apiClient.get('/applications', { params: { status: 'placed', limit: 100 } });
-      return response.data.data.data || [];
+      return response.data.data || [];
     },
   });
 

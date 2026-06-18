@@ -23,7 +23,7 @@ export const AllocationForm: React.FC<AllocationFormProps> = ({ onClose }) => {
     queryKey: ['jobOpenings', 'open-list'],
     queryFn: async () => {
       const response = await apiClient.get('/job-openings', { params: { status: 'open', limit: 100 } });
-      return response.data.data.data || [];
+      return response.data.data || [];
     },
   });
 
@@ -32,7 +32,7 @@ export const AllocationForm: React.FC<AllocationFormProps> = ({ onClose }) => {
     queryKey: ['candidates', 'active-list'],
     queryFn: async () => {
       const response = await apiClient.get('/candidates', { params: { status: 'active', limit: 100 } });
-      return response.data.data.data || [];
+      return response.data.data || [];
     },
   });
 

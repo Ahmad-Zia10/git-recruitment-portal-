@@ -21,7 +21,7 @@ export const Candidates: React.FC = () => {
       params.append('page', page.toString());
       
       const response = await apiClient.get('/candidates', { params });
-      return response.data.data;
+      return response.data;
     },
   });
 
