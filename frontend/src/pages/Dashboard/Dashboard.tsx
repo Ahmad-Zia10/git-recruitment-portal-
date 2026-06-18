@@ -35,7 +35,14 @@ export const Dashboard: React.FC = () => {
     );
   }
 
-  const summary = data?.summary || { total_active_openings: 0, total_candidates: 0, applications_this_month: 0, total_placed: 0, total_clients: 0, active_projects: 0, billing_summary: 0 };
+  const summary = {
+    total_active_openings: data?.summary?.total_active_openings || 0,
+    total_candidates: data?.summary?.total_candidates || 0,
+    applications_this_month: data?.summary?.applications_this_month || 0,
+    total_placed: data?.summary?.total_placed || 0,
+    total_clients: data?.summary?.total_clients || 0,
+    billing_summary: data?.summary?.billing_summary || 0,
+  };
 
   return (
     <>
@@ -44,7 +51,7 @@ export const Dashboard: React.FC = () => {
         <p className="font-body-md text-body-md text-on-surface-variant">Track your resource allocations and enterprise bench metrics in real-time.</p>
       </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-gutter mb-6">
         {/* Card 1: Total Clients */}
         <div className="bg-surface-container-lowest p-6 rounded-brand border border-outline-variant custom-shadow-l1 flex flex-col gap-4 group hover:border-primary/30 transition-standard">
           <div className="flex justify-between items-start">
@@ -59,20 +66,7 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Card 2: Active Projects */}
-        <div className="bg-surface-container-lowest p-6 rounded-brand border border-outline-variant custom-shadow-l1 flex flex-col gap-4 group hover:border-primary/30 transition-standard">
-          <div className="flex justify-between items-start">
-            <div className="p-3 bg-primary/5 text-primary rounded-xl">
-              <span className="material-symbols-outlined">folder_special</span>
-            </div>
-          </div>
-          <div>
-            <div className="text-display-lg font-display-lg text-on-surface group-hover:text-primary transition-standard">{summary.active_projects}</div>
-            <div className="font-label-md text-label-md text-on-surface-variant">Active Projects</div>
-          </div>
-        </div>
-
-        {/* Card 3: Open Requirements */}
+        {/* Card 2: Open Requirements */}
         <div className="bg-surface-container-lowest p-6 rounded-brand border border-outline-variant custom-shadow-l1 flex flex-col gap-4 group hover:border-primary/30 transition-standard">
           <div className="flex justify-between items-start">
             <div className="p-3 bg-primary/5 text-primary rounded-xl">
@@ -85,7 +79,7 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Card 4: Available Resources */}
+        {/* Card 3: Available Resources */}
         <div className="bg-surface-container-lowest p-6 rounded-brand border border-outline-variant custom-shadow-l1 flex flex-col gap-4 group hover:border-primary/30 transition-standard">
           <div className="flex justify-between items-start">
             <div className="p-3 bg-primary/5 text-primary rounded-xl">
@@ -98,7 +92,7 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Card 5: Active Allocations */}
+        {/* Card 4: Active Allocations */}
         <div className="bg-surface-container-lowest p-6 rounded-brand border border-outline-variant custom-shadow-l1 flex flex-col gap-4 group hover:border-primary/30 transition-standard">
           <div className="flex justify-between items-start">
             <div className="p-3 bg-primary/5 text-primary rounded-xl">
@@ -111,7 +105,7 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Card 6: Billing Summary */}
+        {/* Card 5: Billing Summary */}
         <div className="bg-surface-container-lowest p-6 rounded-brand border border-outline-variant custom-shadow-l1 flex flex-col gap-4 group hover:border-primary/30 transition-standard">
           <div className="flex justify-between items-start">
             <div className="p-3 bg-primary/5 text-primary rounded-xl">

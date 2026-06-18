@@ -12,6 +12,8 @@ export async function getDashboardAggregates() {
     openingsByPriority,
     applicationsByStatus,
     recentApplications,
+    totalClients,
+    billingSummaryAggregate,
   ] = await Promise.all([
     // Total active openings
     prisma.job_openings.count({
@@ -67,7 +69,19 @@ export async function getDashboardAggregates() {
         },
       },
     }),
+
+    // Total clients count
+    prisma.companies.count(),
+
+    // Monthly billing sum (sum of bill_to_customer_gbp_monthly)
+    prisma.billing_records.aggregate({
+      _sum: {
+        bill_to_customer_gbp_monthly: true,
+      },
+    }),
   ])
+
+  const billingSum = Number(billingSummaryAggregate._sum.bill_to_customer_gbp_monthly || 0)
 
   return {
     summary: {
@@ -75,6 +89,8 @@ export async function getDashboardAggregates() {
       total_candidates: totalCandidates,
       applications_this_month: applicationsThisMonth,
       total_placed: totalPlaced,
+      total_clients: totalClients,
+      billing_summary: billingSum,
     },
     openings_by_priority: openingsByPriority.reduce(
       (acc, item) => {

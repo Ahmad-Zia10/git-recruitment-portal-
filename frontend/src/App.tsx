@@ -11,8 +11,7 @@ import { Candidates } from './pages/Candidates/Candidates';
 import { Pipeline } from './pages/Applications/Pipeline';
 import { Clients } from './pages/Clients/Clients';
 import { Billing } from './pages/Billing/Billing';
-import { Projects } from './pages/Projects/Projects';
-import { ProjectDetails } from './pages/Projects/ProjectDetails';
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,8 +41,6 @@ function App() {
             <Route path="resources" element={<Candidates />} />
             <Route path="allocations" element={<Pipeline />} />
             <Route path="clients" element={<Clients />} />
-            <Route path="projects" element={<Projects />} />
-            <Route path="projects/:id" element={<ProjectDetails />} />
             <Route path="billing" element={<Billing />} />
           </Route>
         </Routes>

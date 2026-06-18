@@ -54,25 +54,7 @@ export const Sidebar: React.FC = () => {
           </NavLink>
         )}
 
-        {hasPermission('view_companies') && (
-          <NavLink 
-            to="/projects"
-            className={({ isActive }) => 
-              `flex items-center gap-3 px-4 py-3 transition-colors duration-200 ${
-                isActive 
-                  ? 'text-primary border-l-4 border-primary bg-surface-variant/10' 
-                  : 'text-surface-container-lowest/80 hover:bg-surface-variant/5 hover:text-surface-container-lowest'
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>folder_special</span>
-                <span className="font-label-md text-label-md">Projects</span>
-              </>
-            )}
-          </NavLink>
-        )}
+
 
         {hasPermission('view_jobs') && (
           <NavLink 
