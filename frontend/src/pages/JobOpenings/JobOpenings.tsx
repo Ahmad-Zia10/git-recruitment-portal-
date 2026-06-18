@@ -33,7 +33,7 @@ export const JobOpenings: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h2 className="font-headline-lg text-headline-lg text-on-surface mb-1">Requirements</h2>
-          <p className="font-body-md text-on-surface-variant">Manage and track resource requirements for all enterprise projects.</p>
+          <p className="font-body-md text-on-surface-variant">Manage and track candidate requirements for all enterprise clients.</p>
         </div>
         
         {hasPermission('create_job') && (

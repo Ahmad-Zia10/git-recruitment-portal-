@@ -38,7 +38,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route index element={<Dashboard />} />
             <Route path="requirements" element={<JobOpenings />} />
-            <Route path="resources" element={<Candidates />} />
+            <Route path="candidates" element={<Candidates />} />
             <Route path="allocations" element={<Pipeline />} />
             <Route path="clients" element={<Clients />} />
             <Route path="billing" element={<Billing />} />

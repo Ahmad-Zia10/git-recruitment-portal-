@@ -111,7 +111,7 @@ export const AllocationForm: React.FC<AllocationFormProps> = ({ onClose }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-on-surface mb-1">Resource / Candidate *</label>
+            <label className="block text-sm font-medium text-on-surface mb-1">Candidate *</label>
             <select
               required
               value={formData.candidate_id}
@@ -160,7 +160,7 @@ export const AllocationForm: React.FC<AllocationFormProps> = ({ onClose }) => {
               disabled={loading}
               className="px-6 py-2 bg-primary text-on-primary font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {loading ? 'Allocating...' : 'Allocate Resource'}
+              {loading ? 'Allocating...' : 'Allocate Candidate'}
             </button>
           </div>
         </form>

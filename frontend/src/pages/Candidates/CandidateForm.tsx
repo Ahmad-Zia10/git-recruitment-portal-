@@ -90,7 +90,7 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({ onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-outline-variant sticky top-0 bg-surface-container-lowest z-10">
-          <h2 className="font-headline-sm text-headline-sm text-on-surface">Add New Resource</h2>
+          <h2 className="font-headline-sm text-headline-sm text-on-surface">Add New Candidate</h2>
           <button type="button" onClick={onClose} className="p-2 hover:bg-surface-variant/20 rounded-full transition-colors text-on-surface-variant">
             <span className="material-symbols-outlined">close</span>
           </button>
@@ -245,7 +245,7 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({ onClose }) => {
               disabled={loading}
               className="px-6 py-2 bg-primary text-on-primary font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {loading ? 'Adding...' : 'Add Resource'}
+              {loading ? 'Adding...' : 'Add Candidate'}
             </button>
           </div>
         </form>

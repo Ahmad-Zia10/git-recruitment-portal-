@@ -99,7 +99,7 @@ export const BillingForm: React.FC<BillingFormProps> = ({ onClose }) => {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-on-surface mb-1">Placed Allocation / Resource *</label>
+            <label className="block text-sm font-medium text-on-surface mb-1">Placed Allocation / Candidate *</label>
             <select
               required
               value={formData.application_id}

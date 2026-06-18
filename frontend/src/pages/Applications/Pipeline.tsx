@@ -43,7 +43,7 @@ export const Pipeline: React.FC = () => {
       <div className="flex justify-between items-end mb-8">
         <div>
           <h2 className="font-headline-lg text-headline-lg text-on-surface">Allocation Board</h2>
-          <p className="font-body-md text-on-surface-variant mt-1">Manage active resource allocations and assignment stages.</p>
+          <p className="font-body-md text-on-surface-variant mt-1">Manage active candidate allocations and assignment stages.</p>
         </div>
         {hasPermission('create_application') && (
           <button 
@@ -84,7 +84,7 @@ export const Pipeline: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-outline-variant bg-surface-container-low/30">
-                <th className="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Resource</th>
+                <th className="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Candidate</th>
                 <th className="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Requirement</th>
                 <th className="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Allocated On</th>
                 <th className="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Match Score</th>

@@ -78,7 +78,7 @@ export const Sidebar: React.FC = () => {
 
         {hasPermission('view_candidates') && (
           <NavLink 
-            to="/resources"
+            to="/candidates"
             className={({ isActive }) => 
               `flex items-center gap-3 px-4 py-3 transition-colors duration-200 ${
                 isActive 
@@ -90,7 +90,7 @@ export const Sidebar: React.FC = () => {
             {({ isActive }) => (
               <>
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>badge</span>
-                <span className="font-label-md text-label-md">Resources</span>
+                <span className="font-label-md text-label-md">Candidates</span>
               </>
             )}
           </NavLink>

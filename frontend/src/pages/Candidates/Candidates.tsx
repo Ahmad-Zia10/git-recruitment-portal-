@@ -37,9 +37,9 @@ export const Candidates: React.FC = () => {
     <div className="flex-1 overflow-y-auto flex flex-col h-full relative">
       <div className="flex justify-between items-end mb-8">
         <div>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">Resources</h2>
+          <h2 className="font-headline-lg text-headline-lg text-on-surface">Candidates</h2>
           <nav className="flex text-on-surface-variant font-label-md text-label-md mt-1">
-            <span className="hover:text-primary cursor-pointer">Resource Management</span>
+            <span className="hover:text-primary cursor-pointer">Candidate Management</span>
             <span className="mx-2">/</span>
             <span>Active Bench</span>
           </nav>
@@ -50,7 +50,7 @@ export const Candidates: React.FC = () => {
             className="bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-label-md text-label-md font-bold flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-sm"
           >
             <span className="material-symbols-outlined">person_add</span>
-            Add Resource
+            Add Candidate
           </button>
         )}
       </div>
@@ -61,7 +61,7 @@ export const Candidates: React.FC = () => {
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
           <input 
             className="w-full pl-10 pr-4 py-2 bg-white border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-container/20 focus:border-primary transition-all text-body-md" 
-            placeholder="Search resources..." 
+            placeholder="Search candidates..." 
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -122,7 +122,7 @@ export const Candidates: React.FC = () => {
                       </div>
                       <h3 className="font-headline-sm text-headline-sm text-on-surface mb-2">No records found</h3>
                       <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">
-                        We couldn't find any resources matching your current filters. Try adjusting your search criteria or adding a new resource.
+                        We couldn't find any candidates matching your current filters. Try adjusting your search criteria or adding a new candidate.
                       </p>
                       <button 
                         onClick={() => { setSearch(''); setStatus(''); }}

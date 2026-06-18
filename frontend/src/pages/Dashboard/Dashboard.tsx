@@ -47,8 +47,8 @@ export const Dashboard: React.FC = () => {
   return (
     <>
       <section className="flex flex-col gap-1">
-        <h1 className="font-headline-lg text-headline-lg text-on-surface">Resource Management Overview</h1>
-        <p className="font-body-md text-body-md text-on-surface-variant">Track your resource allocations and enterprise bench metrics in real-time.</p>
+        <h1 className="font-headline-lg text-headline-lg text-on-surface">Candidate Management Overview</h1>
+        <p className="font-body-md text-body-md text-on-surface-variant">Track your candidate allocations and enterprise bench metrics in real-time.</p>
       </section>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-gutter mb-6">
@@ -79,7 +79,7 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Card 3: Available Resources */}
+        {/* Card 3: Available Candidates */}
         <div className="bg-surface-container-lowest p-6 rounded-brand border border-outline-variant custom-shadow-l1 flex flex-col gap-4 group hover:border-primary/30 transition-standard">
           <div className="flex justify-between items-start">
             <div className="p-3 bg-primary/5 text-primary rounded-xl">
@@ -88,7 +88,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <div>
             <div className="text-display-lg font-display-lg text-on-surface group-hover:text-primary transition-standard">{summary.total_candidates}</div>
-            <div className="font-label-md text-label-md text-on-surface-variant">Available Resources</div>
+            <div className="font-label-md text-label-md text-on-surface-variant">Available Candidates</div>
           </div>
         </div>
 
@@ -132,7 +132,7 @@ export const Dashboard: React.FC = () => {
             </div>
             <div>
               <div className="font-headline-sm text-headline-sm text-on-surface">Add Requirement</div>
-              <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">Configure a new resource demand for a project.</p>
+              <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">Configure a new candidate demand for a client.</p>
             </div>
           </button>
           
@@ -141,7 +141,7 @@ export const Dashboard: React.FC = () => {
               <span className="material-symbols-outlined">person_add</span>
             </div>
             <div>
-              <div className="font-headline-sm text-headline-sm text-on-surface">Add Resource</div>
+              <div className="font-headline-sm text-headline-sm text-on-surface">Add Candidate</div>
               <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">Import new engineering profiles to your bench.</p>
             </div>
           </button>
@@ -152,7 +152,7 @@ export const Dashboard: React.FC = () => {
             </div>
             <div>
               <div className="font-headline-sm text-headline-sm text-on-surface">Add Allocation</div>
-              <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">Directly link a resource to an active requirement.</p>
+              <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">Directly link a candidate to an active requirement.</p>
             </div>
           </button>
           
