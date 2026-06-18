@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../api/client';
 import { hasPermission } from '../../utils/rbac';
+import { JobOpeningForm } from './JobOpeningForm';
 
 export const JobOpenings: React.FC = () => {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [hiringType, setHiringType] = useState('');
   const [page, setPage] = useState(1);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['jobOpenings', search, status, hiringType, page],
@@ -35,7 +37,10 @@ export const JobOpenings: React.FC = () => {
         </div>
         
         {hasPermission('create_job') && (
-          <button className="flex items-center gap-2 bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-semibold shadow-sm hover:opacity-90 transition-all active:scale-95">
+          <button 
+            onClick={() => setIsFormOpen(true)}
+            className="flex items-center gap-2 bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-semibold shadow-sm hover:opacity-90 transition-all active:scale-95"
+          >
             <span className="material-symbols-outlined">add</span>
             Add Requirement
           </button>
@@ -182,6 +187,9 @@ export const JobOpenings: React.FC = () => {
           </button>
         </div>
       </div>
+      {isFormOpen && (
+        <JobOpeningForm onClose={() => setIsFormOpen(false)} />
+      )}
     </div>
   );
 };

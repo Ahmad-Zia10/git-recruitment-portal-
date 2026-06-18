@@ -21,7 +21,11 @@ export const Login: React.FC = () => {
       setAuth(token, user);
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      if (err.response?.status === 429) {
+        setError('Too many login attempts. Please wait 15 minutes before trying again.');
+      } else {
+        setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }

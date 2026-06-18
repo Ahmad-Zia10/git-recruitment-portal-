@@ -1,11 +1,27 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../api/client';
 import { hasPermission } from '../../utils/rbac';
+import { AllocationForm } from './AllocationForm';
 
 export const Pipeline: React.FC = () => {
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      await apiClient.patch(`/applications/${id}/status`, { status });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardAggregates'] });
+    },
+    onError: (err: any) => {
+      alert(err.response?.data?.message || 'Failed to update allocation status');
+    }
+  });
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['applications', status, page],
@@ -30,7 +46,10 @@ export const Pipeline: React.FC = () => {
           <p className="font-body-md text-on-surface-variant mt-1">Manage active resource allocations and assignment stages.</p>
         </div>
         {hasPermission('create_application') && (
-          <button className="bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-label-md text-label-md font-bold flex items-center gap-2 hover:opacity-90 transition-all shadow-sm">
+          <button 
+            onClick={() => setIsFormOpen(true)}
+            className="bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-label-md text-label-md font-bold flex items-center gap-2 hover:opacity-90 transition-all shadow-sm"
+          >
             <span className="material-symbols-outlined">post_add</span>
             New Allocation
           </button>
@@ -122,8 +141,8 @@ export const Pipeline: React.FC = () => {
                       <select 
                         className="bg-transparent border border-outline-variant rounded px-2 py-1 text-sm outline-none cursor-pointer"
                         value={app.status}
-                        onChange={(e) => console.log('Update status', e.target.value)}
-                        disabled={!hasPermission('edit_application')}
+                        onChange={(e) => updateStatusMutation.mutate({ id: app.id, status: e.target.value })}
+                        disabled={!hasPermission('edit_application') || updateStatusMutation.isPending}
                       >
                         <option value="shortlisted">Shortlisted</option>
                         <option value="screening">Screening</option>
@@ -166,6 +185,9 @@ export const Pipeline: React.FC = () => {
           </button>
         </div>
       </div>
+      {isFormOpen && (
+        <AllocationForm onClose={() => setIsFormOpen(false)} />
+      )}
     </div>
   );
 };

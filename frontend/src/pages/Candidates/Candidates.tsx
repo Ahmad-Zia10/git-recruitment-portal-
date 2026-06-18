@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../api/client';
 import { hasPermission } from '../../utils/rbac';
+import { CandidateForm } from './CandidateForm';
 
 export const Candidates: React.FC = () => {
   const [search, setSearch] = useState('');
@@ -9,6 +10,7 @@ export const Candidates: React.FC = () => {
   const [page, setPage] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['candidates', search, status, page],
@@ -43,7 +45,10 @@ export const Candidates: React.FC = () => {
           </nav>
         </div>
         {hasPermission('create_candidate') && (
-          <button className="bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-label-md text-label-md font-bold flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-sm">
+          <button 
+            onClick={() => setIsFormOpen(true)}
+            className="bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-label-md text-label-md font-bold flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-sm"
+          >
             <span className="material-symbols-outlined">person_add</span>
             Add Resource
           </button>
@@ -237,6 +242,9 @@ export const Candidates: React.FC = () => {
             </div>
           </aside>
         </>
+      )}
+      {isFormOpen && (
+        <CandidateForm onClose={() => setIsFormOpen(false)} />
       )}
     </div>
   );

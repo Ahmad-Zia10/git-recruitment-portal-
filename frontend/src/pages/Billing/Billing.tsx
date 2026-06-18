@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../api/client';
 import { hasPermission } from '../../utils/rbac';
+import { BillingForm } from './BillingForm';
 
 export const Billing: React.FC = () => {
   const [page, setPage] = useState(1);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['billing', page],
@@ -28,7 +30,10 @@ export const Billing: React.FC = () => {
           <p className="font-body-md text-on-surface-variant mt-1">Track financial records and allocation invoicing.</p>
         </div>
         {hasPermission('create_billing') && (
-          <button className="bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-label-md text-label-md font-bold flex items-center gap-2 hover:opacity-90 transition-all shadow-sm">
+          <button 
+            onClick={() => setIsFormOpen(true)}
+            className="bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-label-md text-label-md font-bold flex items-center gap-2 hover:opacity-90 transition-all shadow-sm"
+          >
             <span className="material-symbols-outlined">receipt_long</span>
             Create Invoice
           </button>
@@ -111,6 +116,9 @@ export const Billing: React.FC = () => {
           </button>
         </div>
       </div>
+      {isFormOpen && (
+        <BillingForm onClose={() => setIsFormOpen(false)} />
+      )}
     </div>
   );
 };
