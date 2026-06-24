@@ -9,6 +9,7 @@ import {
   JobOpeningQuerySchema,
   CreateJobOpeningSchema,
   UpdateJobOpeningSchema,
+   SuggestedCandidatesQuerySchema,
 } from './job-opening.schema'
 import {
   listJobOpenings,
@@ -16,6 +17,7 @@ import {
   createJobOpening,
   updateJobOpening,
   deleteJobOpening,
+  getSuggestedCandidates,
 } from './job-opening.service'
 
 export async function jobOpeningRoutes(app: FastifyInstance) {
@@ -32,6 +34,13 @@ export async function jobOpeningRoutes(app: FastifyInstance) {
     const { id } = request.params as { id: string }
     const data = await getJobOpeningById(id)
     return { success: true, data }
+  })
+
+  app.get('/:id/suggested-candidates', { preHandler: requireAnyRole }, async (request) => {
+    const { id } = request.params as { id: string }
+    const query = SuggestedCandidatesQuerySchema.parse(request.query)
+    const result = await getSuggestedCandidates(id, query)
+    return { success: true, ...result }
   })
 
   // Recruiter, account_manager, admin can create and update

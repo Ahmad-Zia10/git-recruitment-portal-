@@ -7,6 +7,7 @@ import {
   JobOpeningQuery,
 } from './job-opening.schema'
 import { getSorting } from '../../shared/utils/sorting'
+import { computeMatchScore } from '../../shared/utils/match-score'
 
 const jobOpeningInclude = {
   company: {
@@ -123,4 +124,62 @@ export async function updateJobOpening(
 export async function deleteJobOpening(id: string) {
   await getJobOpeningById(id)
   return prisma.job_openings.delete({ where: { id } })
+}
+
+const MIN_SUGGESTION_SCORE = 40
+
+export async function getSuggestedCandidates(
+  jobOpeningId: string,
+  query: { page: number; limit: number }
+) {
+  const opening = await getJobOpeningById(jobOpeningId)
+
+  const alreadyApplied = await prisma.applications.findMany({
+    where: { job_opening_id: jobOpeningId },
+    select: { candidate_id: true },
+  })
+  const appliedIds = new Set(alreadyApplied.map((a) => a.candidate_id))
+
+  const candidates = await prisma.candidates.findMany({
+    where: {
+      status: 'active',
+      id: { notIn: Array.from(appliedIds) },
+    },
+    include: { skills: true },
+  })
+
+  const scored = candidates
+    .map((candidate) => ({
+      candidate,
+      score: computeMatchScore(candidate, opening),
+    }))
+    .filter((entry) => entry.score >= MIN_SUGGESTION_SCORE)
+    .sort((a, b) => b.score - a.score)
+
+  const { skip, take, page, limit } = getPagination(query)
+  const paginated = scored.slice(skip, skip + take)
+
+  const data = paginated.map(({ candidate, score }) => ({
+    id: candidate.id,
+    full_name: candidate.full_name,
+    email: candidate.email,
+    phone: candidate.phone,
+    current_location: candidate.current_location,
+    exp_years: candidate.exp_years,
+    current_company: candidate.current_company,
+    current_role: candidate.current_role,
+    availability_status: candidate.availability_status,
+    currency: candidate.currency,
+    expected_ctc: candidate.expected_ctc,
+    expected_day_rate: candidate.expected_day_rate,
+    match_score: score,
+    primary_skills: candidate.skills
+      .filter((s) => s.is_primary)
+      .map((s) => ({ skill: s.skill, proficiency: s.proficiency })),
+  }))
+
+  return {
+    data,
+    meta: getPaginationMeta(scored.length, page, limit),
+  }
 }

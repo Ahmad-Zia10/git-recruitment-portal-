@@ -1,4 +1,19 @@
-Instructions/
-.DS_Store
-backend/.env
+# Dependencies
 **/node_modules/
+
+# Environment files
+backend/.env
+frontend/.env
+
+# Build output
+backend/dist/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Agent instructions
+Instructions/
