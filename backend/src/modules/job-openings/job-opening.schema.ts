@@ -39,6 +39,12 @@ export const JobOpeningQuerySchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).optional(),
 })
 
+export const SuggestedCandidatesQuerySchema = z.object({
+  page: z.coerce.number().default(1),
+  limit: z.coerce.number().max(100).default(20),
+})
+
+export type SuggestedCandidatesQuery = z.infer<typeof SuggestedCandidatesQuerySchema>
 export type CreateJobOpeningInput = z.infer<typeof CreateJobOpeningSchema>
 export type UpdateJobOpeningInput = z.infer<typeof UpdateJobOpeningSchema>
 export type JobOpeningQuery = z.infer<typeof JobOpeningQuerySchema>
