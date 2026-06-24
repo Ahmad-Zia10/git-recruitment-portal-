@@ -144,6 +144,10 @@ export async function addSkill(candidateId: string, data: CreateSkillInput) {
 
 export async function deleteSkill(candidateId: string, skillId: string) {
   await getCandidateById(candidateId)
+  const skill = await prisma.candidate_skills.findFirst({
+    where: { id: skillId, candidate_id: candidateId },
+  })
+  if (!skill) throw new NotFoundError('Skill not found')
   return prisma.candidate_skills.delete({ where: { id: skillId } })
 }
 
@@ -166,6 +170,10 @@ export async function addWorkHistory(
 
 export async function deleteWorkHistory(candidateId: string, entryId: string) {
   await getCandidateById(candidateId)
+  const entry = await prisma.candidate_work_history.findFirst({
+    where: { id: entryId, candidate_id: candidateId },
+  })
+  if (!entry) throw new NotFoundError('Work history entry not found')
   return prisma.candidate_work_history.delete({ where: { id: entryId } })
 }
 
@@ -183,6 +191,10 @@ export async function addEducation(
 
 export async function deleteEducation(candidateId: string, entryId: string) {
   await getCandidateById(candidateId)
+  const entry = await prisma.candidate_education.findFirst({
+    where: { id: entryId, candidate_id: candidateId },
+  })
+  if (!entry) throw new NotFoundError('Education entry not found')
   return prisma.candidate_education.delete({ where: { id: entryId } })
 }
 

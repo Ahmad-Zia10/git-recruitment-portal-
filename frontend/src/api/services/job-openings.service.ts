@@ -1,6 +1,6 @@
 import apiClient from '../client';
 import type { ApiListResponse, ApiSuccessResponse } from '../types/api.types';
-import type { JobOpening, JobOpeningListParams } from '../../types/job-opening.types';
+import type { JobOpening, JobOpeningListParams, SuggestedCandidate } from '../../types/job-opening.types';
 import type { CreateJobOpeningFormValues } from '../../schemas/job-opening.schema';
 import { toCreateJobOpeningPayload } from '../../schemas/job-opening.schema';
 
@@ -32,4 +32,22 @@ export async function createJobOpening(values: CreateJobOpeningFormValues) {
   const payload = toCreateJobOpeningPayload(values);
   const response = await apiClient.post<ApiSuccessResponse<JobOpening>>('/job-openings', payload);
   return response.data.data;
+}
+
+export async function getSuggestedCandidates(jobOpeningId: string, page = 1, limit = 10) {
+  const response = await apiClient.get<ApiListResponse<SuggestedCandidate>>(
+    `/job-openings/${jobOpeningId}/suggested-candidates`,
+    { params: { page, limit } }
+  );
+  return response.data;
+}
+
+export async function updateJobOpening(id: string, values: CreateJobOpeningFormValues) {
+  const payload = toCreateJobOpeningPayload(values);
+  const response = await apiClient.put<ApiSuccessResponse<JobOpening>>(`/job-openings/${id}`, payload);
+  return response.data.data;
+}
+
+export async function deleteJobOpening(id: string) {
+  await apiClient.delete(`/job-openings/${id}`);
 }

@@ -38,3 +38,59 @@ export async function addCandidateSkill(candidateId: string, skill: CreateSkillI
   );
   return response.data.data;
 }
+
+export async function updateCandidate(id: string, values: CreateCandidateFormValues) {
+  const payload = toCreateCandidatePayload(values);
+  const response = await apiClient.put<ApiSuccessResponse<Candidate>>(`/candidates/${id}`, payload);
+  return response.data.data;
+}
+
+export async function deleteCandidateSkill(candidateId: string, skillId: string) {
+  await apiClient.delete(`/candidates/${candidateId}/skills/${skillId}`);
+}
+
+export async function addCandidateWorkHistory(
+  candidateId: string,
+  data: {
+    company_name: string;
+    role_title: string;
+    employment_type: string;
+    start_date: string;
+    is_current: boolean;
+    location?: string;
+    end_date?: string;
+    responsibilities?: string;
+  }
+) {
+  const response = await apiClient.post<ApiSuccessResponse<unknown>>(
+    `/candidates/${candidateId}/work-history`,
+    data
+  );
+  return response.data.data;
+}
+
+export async function deleteCandidateWorkHistory(candidateId: string, entryId: string) {
+  await apiClient.delete(`/candidates/${candidateId}/work-history/${entryId}`);
+}
+
+export async function addCandidateEducation(
+  candidateId: string,
+  data: {
+    institution: string;
+    degree: string;
+    field_of_study?: string;
+    start_year?: number;
+    end_year?: number;
+    is_current?: boolean;
+  }
+) {
+  const response = await apiClient.post<ApiSuccessResponse<unknown>>(
+    `/candidates/${candidateId}/education`,
+    data
+  );
+  return response.data.data;
+}
+
+export async function deleteCandidateEducation(candidateId: string, entryId: string) {
+  await apiClient.delete(`/candidates/${candidateId}/education/${entryId}`);
+}

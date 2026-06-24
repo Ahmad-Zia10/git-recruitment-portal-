@@ -6,26 +6,42 @@ import { useJobOpenings } from '../hooks/useJobOpenings';
 import { JobOpeningsToolbar } from '../components/JobOpeningsToolbar';
 import { JobOpeningsTable } from '../components/JobOpeningsTable';
 import { JobOpeningFormModal } from '../components/JobOpeningFormModal';
+import { JobOpeningDetailDrawer } from '../components/JobOpeningDetailDrawer';
 
 export const JobOpeningsPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [hiringType, setHiringType] = useState('');
+  const [priority, setPriority] = useState('');
+  const [workMode, setWorkMode] = useState('');
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const debouncedSearch = useDebouncedValue(search);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, status, hiringType]);
+  }, [debouncedSearch, status, hiringType, priority, workMode, sortBy, sortOrder]);
 
   const { jobs, meta, isLoading, isError } = useJobOpenings({
     search: debouncedSearch,
     status,
     hiringType,
+    priority,
+    workMode,
+    sortBy,
+    sortOrder,
     page,
   });
+
+  const handleViewDetails = (jobId: string) => {
+    setSelectedJobId(jobId);
+    setIsDetailOpen(true);
+  };
 
   return (
     <div className="flex flex-col h-full w-full max-w-full min-w-0 overflow-hidden">
@@ -53,9 +69,25 @@ export const JobOpeningsPage: React.FC = () => {
         search={search}
         status={status}
         hiringType={hiringType}
+        priority={priority}
+        workMode={workMode}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
         onSearchChange={setSearch}
         onStatusChange={setStatus}
         onHiringTypeChange={setHiringType}
+        onAdvancedFiltersChange={({ priority: p, workMode: w, sortBy: sb, sortOrder: so }) => {
+          setPriority(p);
+          setWorkMode(w);
+          setSortBy(sb);
+          setSortOrder(so);
+        }}
+        onClearAdvancedFilters={() => {
+          setPriority('');
+          setWorkMode('');
+          setSortBy('created_at');
+          setSortOrder('desc');
+        }}
       />
 
       <JobOpeningsTable
@@ -64,11 +96,18 @@ export const JobOpeningsPage: React.FC = () => {
         pageSize={meta.limit}
         isLoading={isLoading}
         isError={isError}
+        onViewDetails={handleViewDetails}
       />
 
       <Pagination page={page} meta={meta} onPageChange={setPage} />
 
       {isFormOpen && <JobOpeningFormModal onClose={() => setIsFormOpen(false)} />}
+
+      <JobOpeningDetailDrawer
+        jobId={selectedJobId}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+      />
     </div>
   );
 };

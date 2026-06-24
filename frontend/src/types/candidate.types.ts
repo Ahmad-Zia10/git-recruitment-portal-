@@ -8,6 +8,34 @@ export type AvailabilityStatus =
 
 export type CandidateSource = 'referral' | 'linkedin' | 'job_board' | 'direct' | 'agency';
 
+export interface CandidateSkill {
+  id: string;
+  skill: string;
+  is_primary: boolean;
+  proficiency?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | null;
+}
+
+export interface CandidateWorkHistory {
+  id: string;
+  company_name: string;
+  role_title: string;
+  start_date: string;
+  end_date?: string | null;
+  is_current: boolean;
+  responsibilities?: string | null;
+  location?: string | null;
+}
+
+export interface CandidateEducation {
+  id: string;
+  institution: string;
+  degree: string;
+  field_of_study?: string | null;
+  start_year?: number | null;
+  end_year?: number | null;
+  is_current: boolean;
+}
+
 export interface Candidate {
   id: string;
   full_name: string;
@@ -23,8 +51,14 @@ export interface Candidate {
   current_company?: string | null;
   source?: CandidateSource | null;
   status: CandidateStatus;
+  resume_url?: string | null;
+  linkedin_url?: string | null;
+  notes?: string | null;
   created_at: string;
   updated_at: string;
+  skills?: CandidateSkill[];
+  work_history?: CandidateWorkHistory[];
+  education?: CandidateEducation[];
 }
 
 export interface CandidateListParams {

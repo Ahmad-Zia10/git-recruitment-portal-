@@ -1,5 +1,5 @@
 import { prisma } from '../../config/prisma'
-import { NotFoundError } from '../../shared/errors'
+import { NotFoundError, ConflictError } from '../../shared/errors'
 import { getPagination, getPaginationMeta } from '../../shared/utils/pagination'
 import { CreateCompanyInput, UpdateCompanyInput, CompanyQuery } from './companies.schema'
 
@@ -59,5 +59,9 @@ export async function updateCompany(id: string, data: UpdateCompanyInput) {
 
 export async function deleteCompany(id: string) {
   await getCompanyById(id)
+  const linkedJobs = await prisma.job_openings.count({ where: { company_id: id } })
+  if (linkedJobs > 0) {
+    throw new ConflictError('Cannot delete a client that has linked requirements')
+  }
   return prisma.companies.delete({ where: { id } })
 }

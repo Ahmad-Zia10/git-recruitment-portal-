@@ -8,7 +8,8 @@ import { DashboardPage } from '../features/dashboard/pages/DashboardPage';
 import { CandidatesPage } from '../features/candidates/pages/CandidatesPage';
 import { AllocationsPage } from '../features/applications/pages/AllocationsPage';
 import { BillingPage } from '../features/billing/pages/BillingPage';
-import { ProtectedRoute, PermissionRoute, RouteAccessGuard } from './guards';
+import { RolesPage } from '../features/roles/pages/RolesPage';
+import { ProtectedRoute, PermissionRoute, RouteAccessGuard, RoleRoute } from './guards';
 
 export const AppRouter: React.FC = () => (
   <BrowserRouter>
@@ -71,6 +72,14 @@ export const AppRouter: React.FC = () => (
                 <BillingPage />
               </PermissionRoute>
             </RouteAccessGuard>
+          }
+        />
+        <Route
+          path="admin/roles"
+          element={
+            <RoleRoute roles={['admin']}>
+              <RolesPage />
+            </RoleRoute>
           }
         />
       </Route>

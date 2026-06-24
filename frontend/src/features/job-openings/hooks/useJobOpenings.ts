@@ -3,7 +3,7 @@ import { listJobOpenings } from '../../../api/services/job-openings.service';
 import { queryKeys } from '../../../lib/query-keys';
 import type { PaginationMeta } from '../../../api/types/api.types';
 import type { JobOpening, JobOpeningListFilters } from '../../../types/job-opening.types';
-import type { HiringType, JobOpeningStatus } from '../../../types/job-opening.types';
+import type { HiringType, JobOpeningStatus, JobPriority, WorkMode } from '../../../types/job-opening.types';
 
 const defaultMeta: PaginationMeta = {
   total: 0,
@@ -22,15 +22,28 @@ interface UseJobOpeningsResult {
 }
 
 export function useJobOpenings(filters: JobOpeningListFilters): UseJobOpeningsResult {
-  const { search, status, hiringType, page } = filters;
+  const { search, status, hiringType, priority, workMode, sortBy, sortOrder, page } = filters;
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: queryKeys.jobOpenings.list({ search, status, hiringType, page }),
+    queryKey: queryKeys.jobOpenings.list({
+      search,
+      status,
+      hiringType,
+      priority,
+      workMode,
+      sortBy,
+      sortOrder,
+      page,
+    }),
     queryFn: () =>
       listJobOpenings({
         search: search || undefined,
         status: (status || undefined) as JobOpeningStatus | undefined,
         hiring_type: (hiringType || undefined) as HiringType | undefined,
+        priority: (priority || undefined) as JobPriority | undefined,
+        work_mode: (workMode || undefined) as WorkMode | undefined,
+        sortBy: (sortBy || undefined) as 'created_at' | 'priority' | 'expected_start_date' | 'status' | undefined,
+        sortOrder: (sortOrder || undefined) as 'asc' | 'desc' | undefined,
         page,
       }),
   });

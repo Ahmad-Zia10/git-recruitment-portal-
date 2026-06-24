@@ -3,6 +3,9 @@ import { useDashboard } from '../hooks/useDashboard';
 import { DashboardLoadingSkeleton } from '../components/DashboardLoadingSkeleton';
 import { DashboardSummaryCards } from '../components/DashboardSummaryCards';
 import { DashboardQuickActions } from '../components/DashboardQuickActions';
+import { DashboardApplicationsChart } from '../components/DashboardApplicationsChart';
+import { DashboardPriorityBreakdown } from '../components/DashboardPriorityBreakdown';
+import { DashboardRecentApplications } from '../components/DashboardRecentApplications';
 
 const emptySummary = {
   total_active_openings: 0,
@@ -43,6 +46,18 @@ export const DashboardPage: React.FC = () => {
 
       <DashboardSummaryCards summary={summary} />
       <DashboardQuickActions />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter mt-6">
+        <DashboardApplicationsChart
+          applicationsByStatus={data?.applications_by_status ?? {}}
+        />
+        <DashboardPriorityBreakdown
+          openingsByPriority={data?.openings_by_priority ?? {}}
+        />
+        <DashboardRecentApplications
+          applications={data?.recent_applications ?? []}
+        />
+      </div>
     </>
   );
 };

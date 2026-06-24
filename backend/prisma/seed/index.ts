@@ -43,6 +43,33 @@ async function main() {
     },
   })
 
+  await prisma.users.create({
+    data: {
+      full_name: 'Alex Morgan',
+      email: 'accountmanager@gitrecruitment.com',
+      password_hash: await bcrypt.hash('Account@123', 10),
+      role: 'account_manager',
+    },
+  })
+
+  await prisma.users.create({
+    data: {
+      full_name: 'Finance User',
+      email: 'finance@gitrecruitment.com',
+      password_hash: await bcrypt.hash('Finance@123', 10),
+      role: 'finance',
+    },
+  })
+
+  await prisma.users.create({
+    data: {
+      full_name: 'Viewer User',
+      email: 'viewer@gitrecruitment.com',
+      password_hash: await bcrypt.hash('Viewer@123', 10),
+      role: 'viewer',
+    },
+  })
+
   console.log('✓ Users created')
 
   // ─── Companies ─────────────────────────────────────────

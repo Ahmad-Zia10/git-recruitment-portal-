@@ -7,6 +7,20 @@ export interface ApplicationCreator {
   full_name: string;
 }
 
+export interface InterviewRound {
+  id: string;
+  application_id: string;
+  round_number: number;
+  round_type: 'screening' | 'technical' | 'hr' | 'cultural_fit' | 'final';
+  scheduled_at?: string | null;
+  conducted_by?: string | null;
+  mode?: 'video' | 'phone' | 'onsite' | null;
+  outcome?: 'passed' | 'failed' | 'no_show' | 'rescheduled' | null;
+  feedback?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Application {
   id: string;
   job_opening_id: string;
@@ -31,6 +45,7 @@ export interface Application {
     role?: { id: string; title: string };
   };
   creator?: ApplicationCreator;
+  interview_rounds?: InterviewRound[];
 }
 
 export interface ApplicationListParams {
@@ -49,4 +64,14 @@ export interface UpdateApplicationStatusInput {
   rejection_reason?: string;
   offer_date?: string;
   placed_date?: string;
+}
+
+export interface CreateInterviewRoundInput {
+  round_number: number;
+  round_type: InterviewRound['round_type'];
+  scheduled_at?: string;
+  conducted_by?: string;
+  mode?: NonNullable<InterviewRound['mode']>;
+  outcome?: NonNullable<InterviewRound['outcome']>;
+  feedback?: string;
 }

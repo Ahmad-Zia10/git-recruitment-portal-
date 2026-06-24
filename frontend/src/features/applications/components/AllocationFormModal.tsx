@@ -11,12 +11,20 @@ import { ErrorAlert } from '../../../components/feedback/ErrorAlert';
 
 interface AllocationFormModalProps {
   onClose: () => void;
+  initialCandidateId?: string;
+  initialJobOpeningId?: string;
 }
 
-export const AllocationFormModal: React.FC<AllocationFormModalProps> = ({ onClose }) => {
-  const [formData, setFormData] = useState<CreateApplicationFormValues>(
-    createApplicationFormDefaults
-  );
+export const AllocationFormModal: React.FC<AllocationFormModalProps> = ({
+  onClose,
+  initialCandidateId = '',
+  initialJobOpeningId = '',
+}) => {
+  const [formData, setFormData] = useState<CreateApplicationFormValues>({
+    ...createApplicationFormDefaults,
+    candidate_id: initialCandidateId,
+    job_opening_id: initialJobOpeningId,
+  });
   const [validationError, setValidationError] = useState('');
 
   const { jobs, candidates, isLoading: optionsLoading } = useAllocationOptions();

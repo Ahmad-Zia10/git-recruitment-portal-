@@ -4,6 +4,8 @@ import type {
   Application,
   ApplicationListParams,
   UpdateApplicationStatusInput,
+  CreateInterviewRoundInput,
+  InterviewRound,
 } from '../../types/application.types';
 import type { CreateApplicationFormValues } from '../../schemas/application.schema';
 import { toCreateApplicationPayload } from '../../schemas/application.schema';
@@ -41,6 +43,33 @@ export async function updateApplicationStatus(
 ) {
   const response = await apiClient.patch<ApiSuccessResponse<Application>>(
     `/applications/${id}/status`,
+    input
+  );
+  return response.data.data;
+}
+
+export async function recalculateMatchScore(id: string) {
+  const response = await apiClient.post<ApiSuccessResponse<Application>>(
+    `/applications/${id}/recalculate-score`
+  );
+  return response.data.data;
+}
+
+export async function addInterviewRound(applicationId: string, input: CreateInterviewRoundInput) {
+  const response = await apiClient.post<ApiSuccessResponse<InterviewRound>>(
+    `/applications/${applicationId}/interviews`,
+    input
+  );
+  return response.data.data;
+}
+
+export async function updateInterviewRound(
+  applicationId: string,
+  roundId: string,
+  input: Partial<CreateInterviewRoundInput>
+) {
+  const response = await apiClient.patch<ApiSuccessResponse<InterviewRound>>(
+    `/applications/${applicationId}/interviews/${roundId}`,
     input
   );
   return response.data.data;

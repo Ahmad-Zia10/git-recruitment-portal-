@@ -9,6 +9,7 @@ interface JobOpeningsTableProps {
   pageSize: number;
   isLoading: boolean;
   isError: boolean;
+  onViewDetails: (jobId: string) => void;
 }
 
 function statusBadgeClass(status: JobOpening['status']) {
@@ -23,6 +24,7 @@ export const JobOpeningsTable: React.FC<JobOpeningsTableProps> = ({
   pageSize,
   isLoading,
   isError,
+  onViewDetails,
 }) => (
   <div className="bg-surface-container-lowest border border-outline-variant rounded-[12px] shadow-sm flex flex-col relative flex-1 min-h-[400px] w-full max-w-full min-w-0 overflow-hidden">
     <div className="overflow-x-auto custom-scrollbar w-full flex-1">
@@ -116,6 +118,7 @@ export const JobOpeningsTable: React.FC<JobOpeningsTableProps> = ({
                 <td className="px-6 py-4 text-right">
                   <button
                     type="button"
+                    onClick={() => onViewDetails(job.id)}
                     className="text-on-surface-variant hover:text-primary transition-colors p-1"
                     title="View Details"
                   >

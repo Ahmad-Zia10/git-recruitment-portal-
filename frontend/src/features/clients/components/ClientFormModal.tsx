@@ -1,22 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   createCompanyFormDefaults,
   createCompanyFormSchema,
   type CreateCompanyFormValues,
 } from '../../../schemas/company.schema';
 import { useCreateClient } from '../hooks/useCreateClient';
+import { useUpdateClient } from '../hooks/useUpdateClient';
 import { getValidationErrorMessage } from '../../../lib/errors';
 import { ErrorAlert } from '../../../components/feedback/ErrorAlert';
+import type { Company } from '../../../types/company.types';
 
 interface ClientFormModalProps {
   onClose: () => void;
+  client?: Company;
 }
 
-export const ClientFormModal: React.FC<ClientFormModalProps> = ({ onClose }) => {
-  const [formData, setFormData] = useState<CreateCompanyFormValues>(createCompanyFormDefaults);
+export const ClientFormModal: React.FC<ClientFormModalProps> = ({ onClose, client }) => {
+  const isEdit = Boolean(client);
+  const [formData, setFormData] = useState<CreateCompanyFormValues>(
+    client
+      ? {
+          name: client.name,
+          industry: client.industry ?? '',
+          country: client.country ?? '',
+          city: client.city ?? '',
+          contact_name: client.contact_name ?? '',
+          contact_email: client.contact_email ?? '',
+          contact_phone: client.contact_phone ?? '',
+          status: client.status,
+        }
+      : createCompanyFormDefaults
+  );
   const [validationError, setValidationError] = useState('');
 
   const createClient = useCreateClient(onClose);
+  const updateClient = useUpdateClient(onClose);
+  const isPending = createClient.isPending || updateClient.isPending;
+
+  useEffect(() => {
+    setValidationError('');
+    createClient.reset();
+    updateClient.reset();
+  }, [client?.id]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,20 +53,28 @@ export const ClientFormModal: React.FC<ClientFormModalProps> = ({ onClose }) => 
       return;
     }
 
-    createClient.mutate(parsed.data);
+    if (isEdit && client) {
+      updateClient.mutate({ id: client.id, values: parsed.data });
+    } else {
+      createClient.mutate(parsed.data);
+    }
   };
 
+  const mutationError = isEdit ? updateClient.error : createClient.error;
+  const mutationFailed = isEdit ? updateClient.isError : createClient.isError;
   const errorMessage =
     validationError ||
-    (createClient.isError
-      ? getValidationErrorMessage(createClient.error, 'Failed to create client')
+    (mutationFailed
+      ? getValidationErrorMessage(mutationError, `Failed to ${isEdit ? 'update' : 'create'} client`)
       : '');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/50 p-4">
       <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-outline-variant sticky top-0 bg-surface-container-lowest z-10">
-          <h2 className="font-headline-sm text-headline-sm text-on-surface">Add New Client</h2>
+          <h2 className="font-headline-sm text-headline-sm text-on-surface">
+            {isEdit ? 'Edit Client' : 'Add New Client'}
+          </h2>
           <button
             type="button"
             onClick={onClose}
@@ -173,10 +206,10 @@ export const ClientFormModal: React.FC<ClientFormModalProps> = ({ onClose }) => 
             </button>
             <button
               type="submit"
-              disabled={createClient.isPending}
+              disabled={isPending}
               className="px-6 py-2 bg-primary text-on-primary font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {createClient.isPending ? 'Creating...' : 'Add Client'}
+              {isPending ? 'Saving...' : isEdit ? 'Save Changes' : 'Add Client'}
             </button>
           </div>
         </form>
