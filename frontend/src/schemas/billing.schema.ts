@@ -64,3 +64,18 @@ export function toCreateBillingPayload(values: CreateBillingFormInput) {
 
   return payload;
 }
+
+export const updateBillingFormInputSchema = z.object({
+  payment_status: paymentStatusSchema,
+  invoice_ref: z.string().max(100).optional(),
+  notes: z.string().max(5000).optional(),
+});
+
+export type UpdateBillingFormInput = z.infer<typeof updateBillingFormInputSchema>;
+
+export function toUpdateBillingPayload(values: UpdateBillingFormInput) {
+  const payload: Record<string, unknown> = { payment_status: values.payment_status };
+  if (values.invoice_ref?.trim()) payload.invoice_ref = values.invoice_ref.trim();
+  if (values.notes?.trim()) payload.notes = values.notes.trim();
+  return payload;
+}

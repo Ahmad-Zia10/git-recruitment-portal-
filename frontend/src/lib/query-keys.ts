@@ -18,21 +18,25 @@ export const queryKeys = {
   },
   jobOpenings: {
     all: ['jobOpenings'] as const,
-    list: (filters: { search: string; status: string; hiringType: string; page: number }) =>
+    list: (filters: Record<string, string | number>) =>
       [...queryKeys.jobOpenings.all, 'list', filters] as const,
     openList: () => [...queryKeys.jobOpenings.all, 'open-list'] as const,
+    detail: (id: string) => [...queryKeys.jobOpenings.all, 'detail', id] as const,
+    suggested: (id: string) => [...queryKeys.jobOpenings.all, 'suggested', id] as const,
   },
   candidates: {
     all: ['candidates'] as const,
     list: (filters: { search: string; status: string; page: number }) =>
       [...queryKeys.candidates.all, 'list', filters] as const,
     activeList: () => [...queryKeys.candidates.all, 'active-list'] as const,
+    detail: (id: string) => [...queryKeys.candidates.all, 'detail', id] as const,
   },
   applications: {
     all: ['applications'] as const,
     list: (filters: { status: string; page: number }) =>
       [...queryKeys.applications.all, 'list', filters] as const,
     placedList: () => [...queryKeys.applications.all, 'placed-list'] as const,
+    detail: (id: string) => [...queryKeys.applications.all, 'detail', id] as const,
   },
   billing: {
     all: ['billing'] as const,

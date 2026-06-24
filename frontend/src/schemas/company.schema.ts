@@ -42,3 +42,5 @@ export function toCreateCompanyPayload(values: CreateCompanyFormValues) {
 
   return payload;
 }
+
+export const toUpdateCompanyPayload = toCreateCompanyPayload;

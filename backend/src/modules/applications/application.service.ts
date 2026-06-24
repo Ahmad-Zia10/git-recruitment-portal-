@@ -1,5 +1,4 @@
 import { prisma } from '../../config/prisma'
-import { NotFoundError, ConflictError } from '../../shared/errors'
 import { getPagination, getPaginationMeta } from '../../shared/utils/pagination'
 import {
   CreateApplicationInput,
@@ -12,6 +11,7 @@ import { validateStatusTransition, ApplicationStatus } from '../../shared/utils/
 import { computeMatchScore } from '../../shared/utils/match-score'
 import { getSorting } from '../../shared/utils/sorting'
 import { logger } from '../../config/logger'
+import { NotFoundError, ConflictError, ValidationError } from '../../shared/errors'
 
 const applicationInclude = {
   job_opening: {
@@ -164,19 +164,72 @@ export async function updateApplicationStatus(
 
 // ─── Interview Rounds ───────────────────────────────────────
 
+// ─── Interview Rounds ───────────────────────────────────────
+
 export async function addInterviewRound(
   applicationId: string,
   data: CreateInterviewRoundInput
 ) {
-  await getApplicationById(applicationId)
+  const application = await getApplicationById(applicationId)
 
-  return prisma.interview_rounds.create({
+  const hasFailedRound = application.interview_rounds.some(
+    (round) => round.outcome === 'failed'
+  )
+
+  if (hasFailedRound) {
+    throw new ValidationError(
+      'Cannot schedule a new round — a previous round has a failed outcome'
+    )
+  }
+
+  const allowedRoundTypesByStatus: Record<string, string[]> = {
+    shortlisted: ['screening'],
+    screening: ['screening'],
+    interviewing: ['technical', 'hr', 'cultural_fit', 'final'],
+    offered: [],
+    placed: [],
+    rejected: [],
+    withdrawn: [],
+  }
+
+  const allowedTypes = allowedRoundTypesByStatus[application.status] ?? []
+
+  if (!allowedTypes.includes(data.round_type)) {
+    throw new ValidationError(
+      `Cannot schedule a '${data.round_type}' round while application status is '${application.status}'`
+    )
+  }
+
+  const round = await prisma.interview_rounds.create({
     data: {
       ...data,
       application_id: applicationId,
       scheduled_at: data.scheduled_at ? new Date(data.scheduled_at) : undefined,
     },
   })
+
+  // Sync application status when a round is first scheduled
+  if (application.status === 'shortlisted') {
+    await prisma.applications.update({
+      where: { id: applicationId },
+      data: { status: 'screening' },
+    })
+  } else if (
+    application.status === 'screening' &&
+    ['technical', 'hr', 'cultural_fit', 'final'].includes(data.round_type)
+  ) {
+    await prisma.applications.update({
+      where: { id: applicationId },
+      data: { status: 'interviewing' },
+    })
+  }
+
+  logger.info(
+    { applicationId, roundType: data.round_type },
+    'Interview round scheduled'
+  )
+
+  return round
 }
 
 export async function updateInterviewRound(
@@ -186,13 +239,42 @@ export async function updateInterviewRound(
 ) {
   await getApplicationById(applicationId)
 
-  return prisma.interview_rounds.update({
+  const round = await prisma.interview_rounds.update({
     where: { id: roundId },
     data: {
       ...data,
       scheduled_at: data.scheduled_at ? new Date(data.scheduled_at) : undefined,
     },
   })
+
+  logger.info(
+    { applicationId, roundId, outcome: data.outcome },
+    'Interview round updated'
+  )
+
+  return round
+}
+
+export async function deleteInterviewRound(applicationId: string, roundId: string) {
+  await getApplicationById(applicationId)
+
+  const round = await prisma.interview_rounds.findUnique({
+    where: { id: roundId },
+  })
+
+  if (!round) throw new NotFoundError('Interview round not found')
+
+  if (round.outcome !== null) {
+    throw new ValidationError(
+      'Cannot delete a round that already has a recorded outcome'
+    )
+  }
+
+  await prisma.interview_rounds.delete({ where: { id: roundId } })
+
+  logger.info({ applicationId, roundId }, 'Interview round deleted')
+
+  return { id: roundId }
 }
 
 export async function recalculateMatchScore(id: string) {

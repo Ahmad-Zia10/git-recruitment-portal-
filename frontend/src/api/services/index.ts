@@ -1,6 +1,6 @@
 export { login } from './auth.service';
 export { listCompanies, getCompanyById, createCompany } from './companies.service';
-export { listJobOpenings, getJobOpeningById, createJobOpening } from './job-openings.service';
+export { listJobOpenings, getJobOpeningById, createJobOpening, getSuggestedCandidates } from './job-openings.service';
 export { listRoles } from './roles.service';
 export {
   listCandidates,
@@ -13,6 +13,8 @@ export {
   getApplicationById,
   createApplication,
   updateApplicationStatus,
+  recalculateMatchScore,
+  addInterviewRound,
 } from './applications.service';
 export {
   listBillingRecords,

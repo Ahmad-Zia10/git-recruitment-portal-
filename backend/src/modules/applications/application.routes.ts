@@ -18,6 +18,7 @@ import {
   updateApplicationStatus,
   addInterviewRound,
   updateInterviewRound,
+  deleteInterviewRound,
   recalculateMatchScore,
 } from './application.service'
 
@@ -71,5 +72,11 @@ export async function applicationRoutes(app: FastifyInstance) {
     const body = UpdateInterviewRoundSchema.parse(request.body)
     const data = await updateInterviewRound(id, roundId, body)
     return { success: true, data }
+  })
+  
+  app.delete('/:id/interviews/:roundId', { preHandler: requireRecruiter }, async (request) => {
+    const { id, roundId } = request.params as { id: string; roundId: string }
+    const data = await deleteInterviewRound(id, roundId)
+    return { success: true, ...data }
   })
 }

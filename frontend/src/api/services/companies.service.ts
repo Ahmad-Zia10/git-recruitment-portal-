@@ -26,3 +26,13 @@ export async function createCompany(values: CreateCompanyFormValues) {
   const response = await apiClient.post<ApiSuccessResponse<Company>>('/companies', payload);
   return response.data.data;
 }
+
+export async function updateCompany(id: string, values: CreateCompanyFormValues) {
+  const payload = toCreateCompanyPayload(values);
+  const response = await apiClient.put<ApiSuccessResponse<Company>>(`/companies/${id}`, payload);
+  return response.data.data;
+}
+
+export async function deleteCompany(id: string) {
+  await apiClient.delete(`/companies/${id}`);
+}

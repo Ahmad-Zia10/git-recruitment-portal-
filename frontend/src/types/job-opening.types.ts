@@ -62,5 +62,25 @@ export interface JobOpeningListFilters {
   search: string;
   status: string;
   hiringType: string;
+  priority: string;
+  workMode: string;
+  sortBy: string;
+  sortOrder: string;
   page: number;
+}
+
+export interface SuggestedCandidate {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  current_location?: string | null;
+  exp_years: number;
+  current_company?: string | null;
+  current_role?: string | null;
+  availability_status: string;
+  currency: string;
+  expected_day_rate?: number | null;
+  match_score: number;
+  primary_skills?: { skill: string; proficiency?: string | null }[];
 }

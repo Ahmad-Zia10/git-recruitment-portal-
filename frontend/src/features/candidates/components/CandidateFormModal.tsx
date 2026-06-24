@@ -1,22 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   createCandidateFormDefaults,
   createCandidateFormSchema,
   type CreateCandidateFormValues,
 } from '../../../schemas/candidate.schema';
 import { useCreateCandidate } from '../hooks/useCreateCandidate';
+import { useUpdateCandidate } from '../hooks/useUpdateCandidate';
 import { getValidationErrorMessage } from '../../../lib/errors';
 import { ErrorAlert } from '../../../components/feedback/ErrorAlert';
 
 interface CandidateFormModalProps {
   onClose: () => void;
+  candidate?: import('../../../types/candidate.types').Candidate;
 }
 
-export const CandidateFormModal: React.FC<CandidateFormModalProps> = ({ onClose }) => {
-  const [formData, setFormData] = useState<CreateCandidateFormValues>(createCandidateFormDefaults);
+export const CandidateFormModal: React.FC<CandidateFormModalProps> = ({ onClose, candidate }) => {
+  const isEdit = Boolean(candidate);
+  const [formData, setFormData] = useState<CreateCandidateFormValues>(
+    candidate
+      ? {
+          full_name: candidate.full_name,
+          email: candidate.email,
+          phone: candidate.phone,
+          exp_years: candidate.exp_years,
+          currency: candidate.currency,
+          expected_day_rate: candidate.expected_day_rate?.toString() ?? '',
+          availability_status: candidate.availability_status,
+          preferred_location: candidate.preferred_location ?? '',
+          source: candidate.source ?? 'linkedin',
+          skills: '',
+        }
+      : createCandidateFormDefaults
+  );
   const [validationError, setValidationError] = useState('');
 
   const createCandidate = useCreateCandidate(onClose);
+  const updateCandidate = useUpdateCandidate(onClose);
+  const isPending = createCandidate.isPending || updateCandidate.isPending;
+
+  useEffect(() => {
+    setValidationError('');
+    createCandidate.reset();
+    updateCandidate.reset();
+  }, [candidate?.id]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,20 +54,25 @@ export const CandidateFormModal: React.FC<CandidateFormModalProps> = ({ onClose 
       return;
     }
 
-    createCandidate.mutate(parsed.data);
+    if (isEdit && candidate) updateCandidate.mutate({ id: candidate.id, values: parsed.data });
+    else createCandidate.mutate(parsed.data);
   };
 
+  const mutationError = isEdit ? updateCandidate.error : createCandidate.error;
+  const mutationFailed = isEdit ? updateCandidate.isError : createCandidate.isError;
   const errorMessage =
     validationError ||
-    (createCandidate.isError
-      ? getValidationErrorMessage(createCandidate.error, 'Failed to create candidate')
+    (mutationFailed
+      ? getValidationErrorMessage(mutationError, `Failed to ${isEdit ? 'update' : 'create'} candidate`)
       : '');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/50 p-4">
       <div className="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-outline-variant sticky top-0 bg-surface-container-lowest z-10">
-          <h2 className="font-headline-sm text-headline-sm text-on-surface">Add New Candidate</h2>
+          <h2 className="font-headline-sm text-headline-sm text-on-surface">
+            {isEdit ? 'Edit Candidate' : 'Add New Candidate'}
+          </h2>
           <button
             type="button"
             onClick={onClose}
@@ -224,10 +255,10 @@ export const CandidateFormModal: React.FC<CandidateFormModalProps> = ({ onClose 
             </button>
             <button
               type="submit"
-              disabled={createCandidate.isPending}
+              disabled={isPending}
               className="px-6 py-2 bg-primary text-on-primary font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {createCandidate.isPending ? 'Adding...' : 'Add Candidate'}
+              {isPending ? 'Saving...' : isEdit ? 'Save Changes' : 'Add Candidate'}
             </button>
           </div>
         </form>

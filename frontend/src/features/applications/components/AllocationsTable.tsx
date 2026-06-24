@@ -15,6 +15,7 @@ interface AllocationsTableProps {
   isError: boolean;
   isUpdating: boolean;
   onStatusChange: (id: string, status: ApplicationStatus) => void;
+  onViewDetails: (id: string) => void;
 }
 
 function matchScoreBarClass(score: number) {
@@ -29,6 +30,7 @@ export const AllocationsTable: React.FC<AllocationsTableProps> = ({
   isError,
   isUpdating,
   onStatusChange,
+  onViewDetails,
 }) => {
   const canEdit = hasPermission('edit_application');
 
@@ -152,6 +154,7 @@ export const AllocationsTable: React.FC<AllocationsTableProps> = ({
                     <td className="px-6 py-4 text-right">
                       <button
                         type="button"
+                        onClick={() => onViewDetails(app.id)}
                         className="text-primary hover:underline text-sm font-semibold"
                       >
                         View Details

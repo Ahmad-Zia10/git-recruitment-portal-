@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { hasPermission } from '../../../lib/rbac';
 import { useDebouncedValue } from '../../../lib/hooks/useDebouncedValue';
+import { exportCandidatesToCsv } from '../../../lib/candidate-export';
+import { queryKeys } from '../../../lib/query-keys';
 import { Pagination } from '../../../components/ui/Pagination';
+import { getCandidateById } from '../../../api/services/candidates.service';
 import { useCandidates } from '../hooks/useCandidates';
 import { CandidatesToolbar } from '../components/CandidatesToolbar';
 import { CandidatesTable } from '../components/CandidatesTable';
@@ -10,14 +15,24 @@ import { CandidateDrawer } from '../components/CandidateDrawer';
 import type { Candidate } from '../../../types/candidate.types';
 
 export const CandidatesPage: React.FC = () => {
-  const [search, setSearch] = useState('');
+  const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get('search') ?? '');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(null);
 
   const debouncedSearch = useDebouncedValue(search);
+
+  useEffect(() => {
+    if (searchParams.get('action') === 'create') {
+      setIsFormOpen(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     setPage(1);
@@ -30,13 +45,22 @@ export const CandidatesPage: React.FC = () => {
   });
 
   const handleRowClick = (candidate: Candidate) => {
-    setSelectedCandidate(candidate);
+    setSelectedCandidateId(candidate.id);
     setIsDrawerOpen(true);
   };
 
   const handleClearFilters = () => {
     setSearch('');
     setStatus('');
+  };
+
+  const handleExportCsv = () => {
+    if (candidates.length === 0) return;
+    exportCandidatesToCsv(candidates);
+  };
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.candidates.all });
   };
 
   return (
@@ -69,6 +93,9 @@ export const CandidatesPage: React.FC = () => {
         onStatusChange={setStatus}
         showingCount={candidates.length}
         totalCount={meta.total}
+        onExportCsv={handleExportCsv}
+        onClearFilters={handleClearFilters}
+        onRefresh={handleRefresh}
       />
 
       <CandidatesTable
@@ -82,12 +109,27 @@ export const CandidatesPage: React.FC = () => {
       <Pagination page={page} meta={meta} onPageChange={setPage} />
 
       <CandidateDrawer
-        candidate={selectedCandidate}
+        candidateId={selectedCandidateId}
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
+        onEdit={async () => {
+          if (!selectedCandidateId) return;
+          setIsDrawerOpen(false);
+          const detail = await queryClient.fetchQuery({
+            queryKey: queryKeys.candidates.detail(selectedCandidateId),
+            queryFn: () => getCandidateById(selectedCandidateId),
+          });
+          setEditingCandidate(detail);
+          setIsFormOpen(true);
+        }}
       />
 
-      {isFormOpen && <CandidateFormModal onClose={() => setIsFormOpen(false)} />}
+      {isFormOpen && (
+        <CandidateFormModal
+          onClose={() => { setIsFormOpen(false); setEditingCandidate(null); }}
+          candidate={editingCandidate ?? undefined}
+        />
+      )}
     </div>
   );
 };
