@@ -1,22 +1,16 @@
 import { create } from 'zustand';
-
-interface User {
-  id: string;
-  email: string;
-  role: 'admin' | 'recruiter' | 'account_manager' | 'finance' | 'viewer';
-  full_name: string;
-}
+import type { AuthUser } from '../api/types/api.types';
 
 interface AuthState {
   token: string | null;
-  user: User | null;
-  setAuth: (token: string, user: User) => void;
+  user: AuthUser | null;
+  setAuth: (token: string, user: AuthUser) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   token: localStorage.getItem('token'),
-  user: JSON.parse(localStorage.getItem('user') || 'null'),
+  user: JSON.parse(localStorage.getItem('user') || 'null') as AuthUser | null,
   setAuth: (token, user) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
