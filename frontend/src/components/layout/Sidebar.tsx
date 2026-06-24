@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { hasPermission } from '../../utils/rbac';
+import { hasPermission } from '../../lib/rbac';
 import { useAuthStore } from '../../store/authStore';
 
 export const Sidebar: React.FC = () => {
@@ -15,6 +15,7 @@ export const Sidebar: React.FC = () => {
       </div>
       
       <nav className="flex-1 px-4 py-4 space-y-1">
+        {hasPermission('view_dashboard') && (
         <NavLink 
           to="/"
           end
@@ -33,6 +34,7 @@ export const Sidebar: React.FC = () => {
             </>
           )}
         </NavLink>
+        )}
 
         {hasPermission('view_companies') && (
           <NavLink 
