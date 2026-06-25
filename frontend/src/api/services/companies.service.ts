@@ -34,5 +34,6 @@ export async function updateCompany(id: string, values: CreateCompanyFormValues)
 }
 
 export async function deleteCompany(id: string) {
-  await apiClient.delete(`/companies/${id}`);
+  const response = await apiClient.delete<{ success: boolean; message: string; softDeleted: boolean }>(`/companies/${id}`);
+  return response.data;
 }

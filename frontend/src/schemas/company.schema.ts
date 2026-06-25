@@ -28,17 +28,18 @@ export const createCompanyFormDefaults: CreateCompanyFormValues = {
   status: 'active',
 };
 
-/** Strip empty strings so optional backend fields pass Zod validation. */
 export function toCreateCompanyPayload(values: CreateCompanyFormValues) {
   const parsed = createCompanyFormSchema.parse(values);
-  const payload: Record<string, unknown> = { name: parsed.name, status: parsed.status };
-
-  if (parsed.industry) payload.industry = parsed.industry;
-  if (parsed.country) payload.country = parsed.country;
-  if (parsed.city) payload.city = parsed.city;
-  if (parsed.contact_name) payload.contact_name = parsed.contact_name;
-  if (parsed.contact_email) payload.contact_email = parsed.contact_email;
-  if (parsed.contact_phone) payload.contact_phone = parsed.contact_phone;
+  const payload: Record<string, unknown> = { 
+    name: parsed.name, 
+    status: parsed.status,
+    industry: parsed.industry,
+    country: parsed.country,
+    city: parsed.city,
+    contact_name: parsed.contact_name,
+    contact_email: parsed.contact_email,
+    contact_phone: parsed.contact_phone
+  };
 
   return payload;
 }
