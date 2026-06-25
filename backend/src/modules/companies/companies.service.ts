@@ -60,8 +60,12 @@ export async function updateCompany(id: string, data: UpdateCompanyInput) {
 export async function deleteCompany(id: string) {
   await getCompanyById(id)
   const linkedJobs = await prisma.job_openings.count({ where: { company_id: id } })
+  
   if (linkedJobs > 0) {
-    throw new ConflictError('Cannot delete a client that has linked requirements')
+    await prisma.companies.update({ where: { id }, data: { status: 'inactive' } })
+    return { success: true, message: 'Client archived. Linked requirements remain for historical record.', softDeleted: true }
   }
-  return prisma.companies.delete({ where: { id } })
+  
+  await prisma.companies.delete({ where: { id } })
+  return { success: true, message: 'Company deleted', softDeleted: false }
 }
