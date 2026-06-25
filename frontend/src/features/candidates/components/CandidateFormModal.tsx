@@ -232,18 +232,7 @@ export const CandidateFormModal: React.FC<CandidateFormModalProps> = ({ onClose,
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-on-surface mb-1">
-              Primary Skills (Comma separated)
-            </label>
-            <input
-              type="text"
-              value={formData.skills ?? ''}
-              onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-              className="w-full px-4 py-2 border border-outline-variant rounded-md focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-              placeholder="e.g. React, TypeScript, Node.js"
-            />
-          </div>
+
 
           <div className="pt-6 flex justify-end gap-3 border-t border-outline-variant">
             <button
