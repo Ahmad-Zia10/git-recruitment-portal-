@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { LoadingState } from '../../../components/feedback/LoadingState';
 import { ErrorAlert } from '../../../components/feedback/ErrorAlert';
@@ -10,7 +10,7 @@ import { queryKeys } from '../../../lib/query-keys';
 import {
   addInterviewRound,
   updateInterviewRound,
-   deleteInterviewRound,
+  deleteInterviewRound,
 } from '../../../api/services/applications.service';
 import {
   toInterviewRoundPayload,

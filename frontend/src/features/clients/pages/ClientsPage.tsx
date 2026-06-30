@@ -19,9 +19,14 @@ export const ClientsPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Company | null>(null);
   const [deletingClient, setDeletingClient] = useState<Company | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const debouncedSearch = useDebouncedValue(search);
-  const deleteClient = useDeleteClient(() => setDeletingClient(null));
+  const deleteClient = useDeleteClient((data) => {
+    setDeletingClient(null);
+    setSuccessMessage(data.message);
+    setTimeout(() => setSuccessMessage(null), 5000);
+  });
 
   useEffect(() => setPage(1), [debouncedSearch]);
 
@@ -60,12 +65,19 @@ export const ClientsPage: React.FC = () => {
 
       {isFormOpen && <ClientFormModal onClose={closeForm} client={editingClient ?? undefined} />}
 
+      {successMessage && (
+        <div className="fixed bottom-4 right-4 bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded shadow-lg z-50 flex items-center gap-2">
+          <span className="material-symbols-outlined">check_circle</span>
+          <span className="font-medium text-sm">{successMessage}</span>
+        </div>
+      )}
+
       {deletingClient && (
         <ConfirmDialog
           title="Delete Client"
           message={
             deleteClient.isError
-              ? getApiErrorMessage(deleteClient.error, 'Failed to delete client. It may have linked requirements.')
+              ? getApiErrorMessage(deleteClient.error, 'An error occurred while deleting the client.')
               : `Are you sure you want to delete "${deletingClient.name}"? This cannot be undone.`
           }
           confirmLabel="Delete"

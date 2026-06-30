@@ -34,6 +34,7 @@ export async function buildApp() {
   app.register(cors, {
     origin: true,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   })
 
   app.register(jwt, {

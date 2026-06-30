@@ -51,7 +51,7 @@ export async function companyRoutes(app: FastifyInstance) {
   // Only admin can delete
   app.delete('/:id', { preHandler: requireAdmin }, async (request) => {
     const { id } = request.params as { id: string }
-    await deleteCompany(id)
-    return { success: true, message: 'Company deleted' }
+    const result = await deleteCompany(id)
+    return result
   })
 }

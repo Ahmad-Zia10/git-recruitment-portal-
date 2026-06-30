@@ -1,5 +1,6 @@
 import { prisma } from '../../config/prisma'
 import { NotFoundError, ConflictError } from '../../shared/errors'
+import { NotFoundError, ConflictError } from '../../shared/errors'
 import { getPagination, getPaginationMeta } from '../../shared/utils/pagination'
 import { CreateCompanyInput, UpdateCompanyInput, CompanyQuery } from './companies.schema'
 
