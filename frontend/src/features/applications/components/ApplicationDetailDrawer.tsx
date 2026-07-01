@@ -273,6 +273,9 @@ export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = (
           initialValues={interviewRoundToFormValues(roundModal.round, nextRoundNumber)}
           isPending={saveRound.isPending}
           errorMessage={saveRound.isError ? error : ''}
+          candidateName={application.candidate?.full_name ?? ''}
+          candidateEmail={application.candidate?.email ?? ''}
+          companyName={application.job_opening?.company?.name ?? ''}
           onClose={() => setRoundModal(null)}
           onSubmit={(values) => saveRound.mutate({ mode: roundModal.mode, round: roundModal.round, values })}
         />
